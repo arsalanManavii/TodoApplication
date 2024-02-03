@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_application/screens/calendar_screen.dart';
 import 'package:note_application/screens/home_screen.dart';
 
 void main() {
@@ -12,11 +13,9 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        fontFamily: 'SM'
-      ),
+      theme: ThemeData(fontFamily: 'SM'),
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: CalendartScreen(),
     );
   }
 }

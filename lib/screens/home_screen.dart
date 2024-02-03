@@ -55,9 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'تمرین زبان انگلیسی',
                           subTitle: 'تمرین زبان انگلیسی کتاب آموزشگاه',
                         )
-                      : CardTaskBoxWidget(imageName: 'hard_working',
-                      title: 'آموزش فلاتر',
-                      subTitle: 'دیدن ویدیو های دوره فلاتر Vip امیر احمد',);
+                      : CardTaskBoxWidget(
+                          imageName: 'hard_working',
+                          title: 'آموزش فلاتر',
+                          subTitle: 'دیدن ویدیو های دوره فلاتر Vip امیر احمد',
+                        );
                 },
               ),
             ],
@@ -235,11 +237,17 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'شهریور',
-              style: TextStyle(color: greyColor),
+              style: TextStyle(
+                  color: greyColor,
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.normal),
             ),
             Text(
               ' ${replaceFarsiNumber('2')}',
-              style: TextStyle(color: greyColor),
+              style: TextStyle(
+                  color: greyColor,
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.normal),
             ),
           ],
         )
