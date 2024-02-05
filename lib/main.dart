@@ -15,7 +15,7 @@ class Application extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'SM'),
       debugShowCheckedModeBanner: false,
-      home: CalendartScreen(),
+      home: CalendarScreen(),
     );
   }
 }

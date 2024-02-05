@@ -42,6 +42,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 32.0),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'مشاهده بیشتر',
+                      style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.bold,
+                          color: greenColor),
+                    ),
+                    Text(
+                      'تسک های امروز',
+                      style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                          color: textColor),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.0),
               TimeLineWidget(),
               SizedBox(height: 32.0),
               ListView.builder(
@@ -54,11 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           imageName: 'study',
                           title: 'تمرین زبان انگلیسی',
                           subTitle: 'تمرین زبان انگلیسی کتاب آموزشگاه',
+                          isClicked: false,
                         )
                       : CardTaskBoxWidget(
                           imageName: 'hard_working',
                           title: 'آموزش فلاتر',
                           subTitle: 'دیدن ویدیو های دوره فلاتر Vip امیر احمد',
+                          isClicked: false,
                         );
                 },
               ),

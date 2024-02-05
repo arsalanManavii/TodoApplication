@@ -7,23 +7,30 @@ class CardTaskBoxWidget extends StatefulWidget {
       {super.key,
       required this.imageName,
       required this.title,
-      required this.subTitle});
+      required this.subTitle,
+      required this.isClicked});
   String imageName;
   String title;
   String subTitle;
+  bool isClicked;
 
   @override
   State<CardTaskBoxWidget> createState() => _CardTaskBoxWidgetState();
 }
 
 class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
-  bool _isClicked = false;
+  bool? _isClicked;
+  @override
+  void initState() {
+    super.initState();
+    _isClicked = widget.isClicked;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-      width: 380,
+      width: 380.0,
       height: 132.0,
       decoration: BoxDecoration(
         color: whiteColor,
@@ -47,7 +54,9 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
 
   Widget _getImage() {
     return SizedBox(
-        width: 116.0, height: 116.0, child: Image.asset('images/${widget.imageName}.png'));
+        width: 116.0,
+        height: 116.0,
+        child: Image.asset('images/${widget.imageName}.png'));
   }
 
   Widget _getMiddlePartOfBox() {
@@ -136,7 +145,7 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _isClicked = !_isClicked;
+          _isClicked = !_isClicked!;
         });
       },
       child: Container(
@@ -145,12 +154,12 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
         height: 24.0,
         decoration: BoxDecoration(
           border: Border.all(
-              color: (_isClicked) ? greenColor : greyColor, width: 2),
+              color: (_isClicked!) ? greenColor : greyColor, width: 2),
           borderRadius: BorderRadius.all(
-            Radius.circular(6.0),
+            Radius.circular(8.0),
           ),
         ),
-        child: (_isClicked) ? Image.asset('images/check_icon.png') : Text(''),
+        child: (_isClicked!) ? Image.asset('images/check_icon.png') : Text(''),
       ),
     );
   }

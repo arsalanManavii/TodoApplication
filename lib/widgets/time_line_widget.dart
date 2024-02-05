@@ -17,34 +17,11 @@ class _TimeLineWidgetState extends State<TimeLineWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'مشاهده بیشتر',
-                style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: greenColor),
-              ),
-              Text(
-                'تسک های امروز',
-                style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: textColor),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 20.0),
         Stack(
           alignment: AlignmentDirectional.center,
           children: [
             Divider(
-              color: Color.fromARGB(255, 177, 241, 225),
+              color: greenColor.withOpacity(0.2),
               thickness: 1.0,
               endIndent: 24.0,
             ),
