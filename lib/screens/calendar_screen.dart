@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:note_application/constant/color.dart';
+import 'package:note_application/screens/add_task_screen.dart';
 import 'package:note_application/utility/utility.dart';
 import 'package:note_application/widgets/card_task_box_widget.dart';
 import 'package:note_application/widgets/time_line_widget.dart';
@@ -20,7 +21,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       backgroundColor: backgroundWhiteColor,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => AddTaskScreen()),
+          );
+        },
         backgroundColor: greenColor,
         child: Image.asset('images/add_icon.png'),
       ),

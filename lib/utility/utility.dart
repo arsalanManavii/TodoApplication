@@ -1,4 +1,5 @@
-
+import 'package:note_application/data/task_type.dart';
+import 'package:note_application/enums/task_type_enum.dart';
 
 List<String> list() {
   var listResult = [
@@ -16,6 +17,49 @@ List<String> list() {
   ];
 
   return listResult;
+}
+
+List<TaskType> getTaskItem() {
+  var listTask = [
+    TaskType(
+        image: 'images/banking.png',
+        title: 'امور مالی',
+        taskTypeEnum: TaskTypeEnum.banking),
+    TaskType(
+        image: 'images/hard_working.png',
+        title: 'کار کردن',
+        taskTypeEnum: TaskTypeEnum.hardWorking),
+    TaskType(
+        image: 'images/meditate.png',
+        title: 'مدیتیشن',
+        taskTypeEnum: TaskTypeEnum.meditate),
+    TaskType(
+        image: 'images/social_friends.png',
+        title: 'قرار دوستانه',
+        taskTypeEnum: TaskTypeEnum.socialFriends),
+    TaskType(
+        image: 'images/study_english.png',
+        title: 'زبان خوندن',
+        taskTypeEnum: TaskTypeEnum.studyEnglish),
+    TaskType(
+        image: 'images/study.png',
+        title: 'مطالعه کردن',
+        taskTypeEnum: TaskTypeEnum.study),
+    TaskType(
+        image: 'images/ui_practice.png',
+        title: 'طراحی ',
+        taskTypeEnum: TaskTypeEnum.uiPractice),
+    TaskType(
+        image: 'images/work_meeting.png',
+        title: 'قرار کاری',
+        taskTypeEnum: TaskTypeEnum.workMeeting),
+    TaskType(
+        image: 'images/workout.png',
+        title: 'ورزش کردن',
+        taskTypeEnum: TaskTypeEnum.workout),
+  ];
+
+  return listTask;
 }
 
 String replaceFarsiNumber(String input) {
