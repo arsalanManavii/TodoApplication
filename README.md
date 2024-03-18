@@ -10,7 +10,7 @@ but of course i will add some features to it later. so hope you guys like it and
 3. using custom paint to creates exact ui like designer's ui
 4. learning Hive and implementing it with CRUD(create,read,update,delete) operaion
 5. working with some new widgets like slidable
-6. 
+   
 <img src="https://github.com/arsalanManavii/TodoApplication/assets/141827056/8d9390a0-73e0-41d0-99c3-7f827ae9cd7e" width = 400 height = 700>
 <img src="https://github.com/arsalanManavii/TodoApplication/assets/141827056/09274ded-4e73-49b9-a7eb-963eb43a8c4b" width = 400 height = 700>
 <img src="https://github.com/arsalanManavii/TodoApplication/assets/141827056/d02d1191-f133-40b6-abaa-764ebf4d7462" width = 400 height = 700>
