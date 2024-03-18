@@ -6,3 +6,4 @@ var textColor = Color(0xff1C1F2E);
 var greyColor = Color(0xffBFC3C8);
 var backgroundWhiteColor = Color(0xffF5F5F5);
 var whiteColor = Color(0xffFFFFFF);
+var linearGradient = LinearGradient(colors: [whiteColor,greenColor]);

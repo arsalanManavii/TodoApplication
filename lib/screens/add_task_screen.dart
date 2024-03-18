@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_application/constant/color.dart';
+import 'package:note_application/data/task.dart';
 import 'package:note_application/utility/utility.dart';
 import 'package:numberpicker/numberpicker.dart';
 
@@ -11,14 +13,16 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
+  var taskBox = Hive.box<Task>('taskBox');
   FocusNode negahban1 = FocusNode();
   FocusNode negahban2 = FocusNode();
   final controllerTitle = TextEditingController();
   final controllerSubTitle = TextEditingController();
-  var hour = 0;
-  var minute = 0;
-  bool isAMFormat = true;
+  var _hour = 1;
+  var _minute = 0;
+  bool _isAMFormat = true;
   int _selectedItem = 0;
+  bool _isTimePicked = false;
   @override
   void initState() {
     super.initState();
@@ -42,6 +46,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundWhiteColor,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
@@ -59,7 +64,36 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 minimumSize: Size(250, 50),
                 backgroundColor: greenColor,
               ),
-              onPressed: () {},
+              onPressed: () {
+                if (!isValid()) {
+                  String properMessage = errorValidationMessage();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        properMessage,
+                        style: TextStyle(
+                            color: whiteColor,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                } else {
+                  taskBox.add(
+                    Task(
+                        title: controllerTitle.text,
+                        subTitle: controllerSubTitle.text,
+                        hour: _hour,
+                        minute: _minute,
+                        taskType: getTaskItem()[_selectedItem],
+                        isAM: _isAMFormat),
+                  );
+                  Navigator.of(context).pop();
+                  var task = taskBox.values.toList()[0];
+                  print(task.title);
+                }
+              },
               child: Text(
                 'اضافه کردن تسک',
                 style: TextStyle(
@@ -139,16 +173,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       NumberPicker(
-                        minValue: 0,
+                        minValue: 1,
                         maxValue: 12,
-                        value: hour,
-                        zeroPad: true,
+                        value: _hour,
+                        zeroPad: false,
                         infiniteLoop: true,
                         itemWidth: 80,
                         itemHeight: 60,
                         onChanged: (value) {
                           setState(() {
-                            hour = value;
+                            _hour = value;
                           });
                         },
                         textStyle: TextStyle(
@@ -169,14 +203,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       NumberPicker(
                         minValue: 0,
                         maxValue: 59,
-                        value: minute,
+                        value: _minute,
                         zeroPad: true,
                         infiniteLoop: true,
                         itemWidth: 80,
                         itemHeight: 60,
                         onChanged: (value) {
                           setState(() {
-                            minute = value;
+                            _minute = value;
                           });
                         },
                         textStyle: TextStyle(
@@ -207,7 +241,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   Material(
                     child: InkWell(
                       splashColor: greenColor.withOpacity(0.3),
-                      onTap: () {},
+                      onTap: () {
+                        setState(
+                          () {
+                            _isTimePicked = true;
+                          },
+                        );
+                      },
                       child: Text(
                         'تایید',
                         style: TextStyle(
@@ -230,7 +270,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isAMFormat = false;
+          _isAMFormat = false;
         });
       },
       child: Container(
@@ -239,9 +279,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ),
-          color: !isAMFormat ? greenColor : greenColor.withOpacity(0.4),
+          color: !_isAMFormat ? greenColor : greenColor.withOpacity(0.4),
           border: Border.all(
-            color: !isAMFormat == "PM" ? whiteColor : Colors.transparent,
+            color: !_isAMFormat == "PM" ? whiteColor : Colors.transparent,
           ),
         ),
         child: Text(
@@ -256,7 +296,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          isAMFormat = true;
+          _isAMFormat = true;
         });
       },
       child: Container(
@@ -265,9 +305,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             borderRadius: BorderRadius.all(
               Radius.circular(10.0),
             ),
-            color: isAMFormat ? greenColor : greenColor.withOpacity(0.4),
+            color: _isAMFormat ? greenColor : greenColor.withOpacity(0.4),
             border: Border.all(
-              color: isAMFormat ? whiteColor : Colors.transparent,
+              color: _isAMFormat ? whiteColor : Colors.transparent,
             )),
         child: Text(
           "ق.ظ",
@@ -340,5 +380,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         ),
       ),
     );
+  }
+
+  bool isValid() {
+    if (controllerTitle.text.isEmpty || controllerSubTitle.text.isEmpty) {
+      return false;
+    } else if (!_isTimePicked) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  String errorValidationMessage() {
+    if (controllerTitle.text.isEmpty || controllerSubTitle.text.isEmpty) {
+      return 'تسک یا توضیحات یادت نره';
+    } else if (_hour == 0 || _minute == 0) {
+      return 'زمان رو یادت رفته!';
+    }
+    return '';
   }
 }

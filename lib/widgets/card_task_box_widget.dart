@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:note_application/data/task.dart';
+import 'package:note_application/utility/utility.dart';
 
 import '../constant/color.dart';
 
 class CardTaskBoxWidget extends StatefulWidget {
-  CardTaskBoxWidget(
-      {super.key,
-      required this.imageName,
-      required this.title,
-      required this.subTitle,
-      required this.isClicked});
-  String imageName;
-  String title;
-  String subTitle;
-  bool isClicked;
+  CardTaskBoxWidget({super.key, required this.task});
+  Task task;
 
   @override
   State<CardTaskBoxWidget> createState() => _CardTaskBoxWidgetState();
 }
 
 class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
-  bool? _isClicked;
+  bool _isDone = false;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _isClicked = widget.isClicked;
+    setState(() {
+      _isDone = widget.task.isDone;
+    });
   }
 
   @override
@@ -56,7 +53,7 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
     return SizedBox(
         width: 116.0,
         height: 116.0,
-        child: Image.asset('images/${widget.imageName}.png'));
+        child: Image.asset('${widget.task.taskType.image}'));
   }
 
   Widget _getMiddlePartOfBox() {
@@ -65,13 +62,13 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
       children: [
         SizedBox(height: 15.0),
         Text(
-          '${widget.title}',
+          '${widget.task.title}',
           style: TextStyle(
               fontSize: 14.0, fontWeight: FontWeight.bold, color: textColor),
         ),
         SizedBox(height: 10.0),
         Text(
-          '${widget.subTitle}',
+          '${widget.task.subTitle}',
           style: TextStyle(
               fontSize: 12.0, fontWeight: FontWeight.normal, color: textColor),
         ),
@@ -92,7 +89,9 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      '۱۰:۰۰',
+                      (widget.task.isAM)
+                          ? '${replaceFarsiNumber('${widget.task.hour}').padLeft(2, '${replaceFarsiNumber('0')}')}:${replaceFarsiNumber('${widget.task.minute}').padLeft(2, '${replaceFarsiNumber('0')}')}'
+                          : '${replaceFarsiNumber('${widget.task.hour + 12}')}:${replaceFarsiNumber('${widget.task.minute}').padLeft(2, '${replaceFarsiNumber('0')}')}',
                       style: TextStyle(
                           color: whiteColor,
                           fontSize: 12.0,
@@ -145,7 +144,9 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _isClicked = !_isClicked!;
+          _isDone = !_isDone;
+          widget.task.isDone = _isDone;
+          widget.task.save();
         });
       },
       child: Container(
@@ -153,13 +154,13 @@ class _CardTaskBoxWidgetState extends State<CardTaskBoxWidget> {
         width: 24.0,
         height: 24.0,
         decoration: BoxDecoration(
-          border: Border.all(
-              color: (_isClicked!) ? greenColor : greyColor, width: 2),
+          border:
+              Border.all(color: (_isDone) ? greenColor : greyColor, width: 2),
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
           ),
         ),
-        child: (_isClicked!) ? Image.asset('images/check_icon.png') : Text(''),
+        child: (_isDone) ? Image.asset('images/check_icon.png') : Text(''),
       ),
     );
   }

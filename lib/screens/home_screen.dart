@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_application/constant/color.dart';
+import 'package:note_application/data/task.dart';
 import 'package:note_application/widgets/card_task_box_widget.dart';
 import 'package:note_application/widgets/time_line_widget.dart';
 
@@ -13,6 +15,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  var taskBox = Hive.box<Task>('taskBox');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,26 +71,29 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20.0),
               TimeLineWidget(),
               SizedBox(height: 32.0),
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: 3,
-                itemBuilder: (BuildContext context, int index) {
-                  return (index % 2 == 0)
-                      ? CardTaskBoxWidget(
-                          imageName: 'study',
-                          title: 'تمرین زبان انگلیسی',
-                          subTitle: 'تمرین زبان انگلیسی کتاب آموزشگاه',
-                          isClicked: false,
-                        )
-                      : CardTaskBoxWidget(
-                          imageName: 'hard_working',
-                          title: 'آموزش فلاتر',
-                          subTitle: 'دیدن ویدیو های دوره فلاتر Vip امیر احمد',
-                          isClicked: false,
-                        );
+              ValueListenableBuilder(
+                valueListenable: taskBox.listenable(),
+                builder: (context, value, child) {
+                  return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: taskBox.values.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var task = taskBox.values.toList()[index];
+
+                      return Dismissible(
+                        key: UniqueKey(),
+                        onDismissed: (direction) {
+                          task.delete();
+                        },
+                        child: CardTaskBoxWidget(
+                          task: task,
+                        ),
+                      );
+                    },
+                  );
                 },
-              ),
+              )
             ],
           ),
         ),

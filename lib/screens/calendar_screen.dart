@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_application/constant/color.dart';
+import 'package:note_application/data/task.dart';
 import 'package:note_application/screens/add_task_screen.dart';
 import 'package:note_application/utility/utility.dart';
 import 'package:note_application/widgets/card_task_box_widget.dart';
@@ -16,6 +18,18 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  var taskBox = Hive.box<Task>('taskBox');
+  List<Task>? tasks;
+  bool _isVisible = false;
+  String _arrowDirection = 'up_arrow';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tasks = taskBox.values.where((element) => element.isDone == true).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,28 +74,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                return Stack(
-                  children: [
-                    CardTaskBoxWidget(
-                        imageName: 'study_english',
-                        title: 'تمرین زبان انگلیسی',
-                        subTitle: 'تمرین زبان انگلیسی کتاب آموزشگاه',
-                        isClicked: true),
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-                      width: 380.0,
-                      height: 132.0,
-                      decoration: BoxDecoration(
-                        color: whiteColor.withOpacity(0.6),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
+                return Visibility(
+                  visible: _isVisible,
+                  child: Stack(
+                    children: [
+                      CardTaskBoxWidget(
+                        task: tasks![index],
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 5.0),
+                        width: 380.0,
+                        height: 132.0,
+                        decoration: BoxDecoration(
+                          color: whiteColor.withOpacity(0.6),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
-              }, childCount: 1),
+              }, childCount: tasks!.length),
             ),
             SliverPadding(
               padding: EdgeInsets.only(top: 20.0),
@@ -93,22 +108,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _getTaskContainer() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        return (index % 2 == 0)
-            ? CardTaskBoxWidget(
-                imageName: 'study',
-                title: 'آموزش فلاتر',
-                subTitle: 'دیدن ویدیو های دوره فلاتر Vip امیر احمد',
-                isClicked: false,
-              )
-            : CardTaskBoxWidget(
-                imageName: 'ui_practice',
-                title: 'آموزش طراحی رابط کاربری',
-                subTitle: 'آموزش و تمرین UI',
-                isClicked: false,
-              );
-      }, childCount: 2),
+    return ValueListenableBuilder(
+      valueListenable: taskBox.listenable(),
+      builder: (context, value, child) {
+        var tasks = taskBox.values.where((element) => element.isDone == false).toList();
+        return SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            var task = tasks[index];
+            return Dismissible(
+              key: UniqueKey(),
+              onDismissed: (direction) {
+                task.delete();
+              },
+              child: CardTaskBoxWidget(
+                task: task,
+              ),
+            );
+          }, childCount: tasks.length),
+        );
+      },
     );
   }
 
@@ -157,24 +175,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Radius.circular(10.0),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 12.0),
-                width: 14.0,
-                height: 8.0,
-                child: Image.asset('images/down_arrow.png'),
-              ),
-              Text(
-                'تسک های انجام شده',
-                style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    color: textColor),
-              ),
-              SizedBox(width: 10.0),
-            ],
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                tasks = taskBox.values
+                    .where((element) => element.isDone == true)
+                    .toList();
+                _isVisible = !_isVisible;
+                if (_isVisible) {
+                  _arrowDirection = 'down_arrow';
+                } else {
+                  _arrowDirection = 'up_arrow';
+                }
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(left: 12.0),
+                  width: 14.0,
+                  height: 8.0,
+                  child: Image.asset('images/$_arrowDirection.png'),
+                ),
+                Text(
+                  'تسک های انجام شده',
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                      color: textColor),
+                ),
+                SizedBox(width: 10.0),
+              ],
+            ),
           ),
         ),
       ),
