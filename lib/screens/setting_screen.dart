@@ -7,7 +7,7 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('Hello World !'),
+        child: Text('این صفحه طراحی نشده است'),
       ),
     );
   }

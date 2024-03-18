@@ -16,7 +16,7 @@ class CronometerScreen extends StatefulWidget {
 
 class _CronometerScreenState extends State<CronometerScreen>
     with SingleTickerProviderStateMixin {
-  late Timer _timer;
+  Timer? _timer;
   double _percentage = 0;
   var minute = 0;
   var seconds = 0;
@@ -36,7 +36,10 @@ class _CronometerScreenState extends State<CronometerScreen>
   @override
   void dispose() {
     // TODO: implement dispose
-    this._timer.cancel();
+    if (_timer == null) {
+    } else {
+      this._timer!.cancel();
+    }
     super.dispose();
   }
 
@@ -83,7 +86,7 @@ class _CronometerScreenState extends State<CronometerScreen>
         _secondsConfirm = 0;
         _minutConfirm = 0;
         _percentage = 0.0;
-        _timer.cancel();
+        _timer!.cancel();
       },
     );
   }
@@ -217,7 +220,6 @@ class _CronometerScreenState extends State<CronometerScreen>
                     if (isTimeEnd) {
                       _stopTimer();
                       isTimeEnd = false;
-                     
                     } else {
                       isTimeEnd = true;
                       _timerStatus = 'پایان';
