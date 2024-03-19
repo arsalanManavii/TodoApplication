@@ -1,6 +1,8 @@
 # note_application
-this is a basic note application that allows users create their notes ,update and delete them.
+this is a basic note application that allows users create,update and delete their notes.
+this app has a cronometer for users to start the timer(countDown) and do what they want to do in the specific amount of time.
 notes are stored on device using Hive ,so the user can see the notes after closing the app(data persistence).
+
 the main goal of creating this project was the ui design not create the whole funcionality,
 but of course i will add some features to it later. so hope you guys like it and i will be useful to you.
 
