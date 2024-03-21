@@ -78,7 +78,10 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
-      body: getScreens().elementAt(_selectedBottomNavigationIndex)
+      body: IndexedStack(
+        index: _selectedBottomNavigationIndex,
+        children: getScreens(),
+      )
     );
   }
 

@@ -74,15 +74,4 @@ String replaceFarsiNumber(String input) {
   return input;
 }
 
-List<CronometerTask> getCronometerTask(){
-  List<CronometerTask> list = [
-    CronometerTask(image: 'icon1', title: 'کارآموزی', subTitle: 'جلسه با خانم رضایی', hour: 0, minut: 25, seconds: 0),
-    CronometerTask(image: 'icon2', title: 'همانگی', subTitle: 'جلسه هماهنگی کارها', hour: 0, minut: 6, seconds: 10),
-    CronometerTask(image: 'icon2', title: 'جلسه', subTitle: 'گفتگو راجب رونده استارتاپ', hour: 1, minut: 0, seconds: 0),
-    CronometerTask(image: 'icon3', title: 'لایو', subTitle: 'دیدن لایو طبقه ۱۶', hour: 0, minut: 40, seconds: 0),
-
-  ];
-  return list;
-}
-
 

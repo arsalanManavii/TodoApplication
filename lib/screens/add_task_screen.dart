@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_application/constant/color.dart';
 import 'package:note_application/data/task.dart';
 import 'package:note_application/utility/utility.dart';
+import 'package:note_application/widgets/text_field_widget.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -51,9 +52,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         child: Column(
           children: [
             SizedBox(height: 30.0),
-            _getTitleContainer(),
+            TextFieldWidget(
+              text: 'عنوان تسک',
+              controller: controllerTitle,
+              focusNode: negahban1,
+            ),
             SizedBox(height: 25.0),
-            _getSubTitleContainer(),
+            TextFieldWidget(
+              text: 'توضیحات تسک',
+              controller: controllerSubTitle,
+              focusNode: negahban2,
+            ),
             SizedBox(height: 25.0),
             _getTimePickerContainer(),
             SizedBox(height: 25.0),
@@ -256,7 +265,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             color: greenColor),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -312,71 +321,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         child: Text(
           "ق.ظ",
           style: TextStyle(color: Colors.white, fontSize: 25),
-        ),
-      ),
-    );
-  }
-
-  Widget _getSubTitleContainer() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 44),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextField(
-          controller: controllerSubTitle,
-          maxLines: 2,
-          focusNode: negahban2,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            labelText: 'توضیحات تسک',
-            labelStyle: TextStyle(
-              fontSize: 20,
-              color: negahban2.hasFocus ? greenColor : greyColor,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(color: Color(0xffC5C5C5), width: 3.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(
-                width: 3,
-                color: greenColor,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _getTitleContainer() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 44),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextField(
-          controller: controllerTitle,
-          focusNode: negahban1,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            labelText: 'عنوان تسک',
-            labelStyle: TextStyle(
-              fontSize: 20,
-              color: negahban1.hasFocus ? greenColor : greyColor,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(color: Color(0xffC5C5C5), width: 3.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              borderSide: BorderSide(
-                width: 3,
-                color: greenColor,
-              ),
-            ),
-          ),
         ),
       ),
     );

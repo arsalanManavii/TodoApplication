@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_application/constant/color.dart';
+import 'package:note_application/data/cronometer_task.dart';
+import 'package:note_application/screens/add_cronometer_screen.dart';
 import 'package:note_application/screens/my_custom_paint.dart';
-import 'package:note_application/utility/utility.dart';
-import 'package:note_application/widgets/cronometer_task_widget.dart';
+
+import '../utility/utility.dart';
 
 class CronometerScreen extends StatefulWidget {
   const CronometerScreen({super.key});
@@ -16,17 +19,16 @@ class CronometerScreen extends StatefulWidget {
 
 class _CronometerScreenState extends State<CronometerScreen>
     with SingleTickerProviderStateMixin {
+  var cronometerTaskBox = Hive.box<CronometerTask>('cronometerTaskBox');
   Timer? _timer;
   double _percentage = 0;
-  var minute = 0;
-  var seconds = 0;
-  String _timerStatus = 'شروع';
+  String _startButtonStatus = 'شروع';
   String status = 'توقف';
-  String _mainStatus = '';
-  int? _minutConfirm = 1;
-  int? _secondsConfirm = 5;
+  String _textFormatStatus = '';
+  int? _minutConfirm = 0;
+  int? _secondsConfirm = 0;
   var actualSeconds;
-  bool isStop = false;
+  bool _isStop = false;
   bool isTimeEnd = false;
   var temp = 1;
 
@@ -53,7 +55,7 @@ class _CronometerScreenState extends State<CronometerScreen>
         print(' time : ${timer.tick}');
         setState(
           () {
-            if (isStop) {
+            if (_isStop) {
             } else {
               if (actualSeconds > 0) {
                 actualSeconds--;
@@ -67,15 +69,26 @@ class _CronometerScreenState extends State<CronometerScreen>
                   _secondsConfirm = _secondsConfirm! - 1;
                 }
                 if (temp <= totalSeconds) {
-                  var per = (temp / totalSeconds) * 100;
-                  _percentage = per;
+                  _percentage = (temp / totalSeconds) * 100;
+
                   temp++;
                 }
+              } else {
+                setState(
+                  () {
+                    _percentage = 0.0;
+                    _isStop = false;
+                    temp = 1;
+                    _startButtonStatus = 'شروع';
+                    status = 'توقف';
+                    isTimeEnd = false;
+                    _timer!.cancel();
+                  },
+                );
               }
             }
           },
         );
-        print('percent : $_percentage');
       },
     );
   }
@@ -86,6 +99,9 @@ class _CronometerScreenState extends State<CronometerScreen>
         _secondsConfirm = 0;
         _minutConfirm = 0;
         _percentage = 0.0;
+        _isStop = false;
+        temp = 1;
+
         _timer!.cancel();
       },
     );
@@ -139,7 +155,7 @@ class _CronometerScreenState extends State<CronometerScreen>
         Column(
           children: [
             Text(
-              '$_mainStatus',
+              '$_textFormatStatus',
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
@@ -175,14 +191,14 @@ class _CronometerScreenState extends State<CronometerScreen>
               onPressed: () {
                 setState(() {
                   if (isTimeEnd) {
-                    if (isStop) {
-                      isStop = false;
+                    if (_isStop) {
+                      _isStop = false;
                       status = 'توقف';
-                      _mainStatus = 'ادامه';
+                      _textFormatStatus = 'ادامه';
                     } else {
                       status = 'ادامه';
-                      isStop = true;
-                      _mainStatus = 'توقف';
+                      _isStop = true;
+                      _textFormatStatus = 'توقف';
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -214,22 +230,33 @@ class _CronometerScreenState extends State<CronometerScreen>
                 ),
               ),
               onPressed: () {
-                setState(
-                  () {
-                    _mainStatus = 'شروع';
-                    if (isTimeEnd) {
-                      _stopTimer();
-                      isTimeEnd = false;
-                    } else {
-                      isTimeEnd = true;
-                      _timerStatus = 'پایان';
-                    }
-                    _startTimer();
-                  },
-                );
+                //for now we have atleast one minut//
+                if (_minutConfirm == 0 && !isTimeEnd) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('زمان تسک رو انتخاب کن'),
+                    ),
+                  );
+                } else {
+                  setState(
+                    () {
+                      _textFormatStatus = 'شروع';
+                      if (isTimeEnd) {
+                        _stopTimer();
+                        isTimeEnd = false;
+                        _startButtonStatus = 'شروع';
+                        status = 'توقف';
+                      } else {
+                        isTimeEnd = true;
+                        _startButtonStatus = 'پایان';
+                        _startTimer();
+                      }
+                    },
+                  );
+                }
               },
               child: Text(
-                '$_timerStatus',
+                '$_startButtonStatus',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -256,62 +283,62 @@ class _CronometerScreenState extends State<CronometerScreen>
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: getCronometerTask().length,
-            itemBuilder: (BuildContext context, int index) {
-              return Slidable(
-                startActionPane: ActionPane(
-                  motion: ScrollMotion(),
-                  children: [
-                    SizedBox(width: 10.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: 76.0,
-                        height: 76.0,
-                        decoration: BoxDecoration(
-                          color: Color(0xffFF5252),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+          child: ValueListenableBuilder(
+            valueListenable: cronometerTaskBox.listenable(),
+            builder: (context, value, child) {
+              return ListView.builder(
+                itemCount: cronometerTaskBox.values.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var cronometerTask = cronometerTaskBox.values.toList()[index];
+
+                  return Slidable(
+                      startActionPane: ActionPane(
+                        motion: ScrollMotion(),
+                        children: [
+                          SizedBox(width: 10.0),
+                          InkWell(
+                            onTap: () {},
+                            child: Container(
+                              width: 76.0,
+                              height: 76.0,
+                              decoration: BoxDecoration(
+                                color: Color(0xffFF5252),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10.0),
+                                ),
+                              ),
+                              child: Image.asset(
+                                'images/delete_icon.png',
+                                scale: 4.0,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Image.asset(
-                          'images/delete_icon.png',
-                          scale: 4.0,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 20.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        width: 76.0,
-                        height: 76.0,
-                        decoration: BoxDecoration(
-                          color: Color(0xff5263FC),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10.0),
+                          SizedBox(width: 20.0),
+                          InkWell(
+                            onTap: () {},
+                            child: Container(
+                              width: 76.0,
+                              height: 76.0,
+                              decoration: BoxDecoration(
+                                color: Color(0xff5263FC),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10.0),
+                                ),
+                              ),
+                              child: Image.asset(
+                                'images/edit.png',
+                                scale: 4.0,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Image.asset(
-                          'images/edit.png',
-                          scale: 4.0,
-                        ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                child: CronometerTaskWidget(
-                    imageAddress: getCronometerTask()[index].image,
-                    title: getCronometerTask()[index].title,
-                    subTitle: getCronometerTask()[index].subTitle,
-                    hour: getCronometerTask()[index].hour,
-                    minut: getCronometerTask()[index].minut,
-                    seconds: getCronometerTask()[index].seconds),
+                      child: _getCronometerTasksListItem(cronometerTask));
+                },
               );
             },
           ),
-        )
+        ),
       ],
     );
   }
@@ -325,7 +352,19 @@ class _CronometerScreenState extends State<CronometerScreen>
           Container(
             width: 25.0,
             height: 25.0,
-            child: Image.asset('images/add_container_icon.png'),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddCronometerScreen();
+                    },
+                  ),
+                );
+              },
+              child: Image.asset('images/add_container_icon.png'),
+            ),
           ),
           SizedBox(width: 20.0),
           Container(
@@ -365,6 +404,82 @@ class _CronometerScreenState extends State<CronometerScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _getCronometerTasksListItem(var cronometerTask) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+      child: Container(
+        height: 76.0,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10.0),
+            ),
+            color: whiteColor),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                  onTap: () {
+                    setState(
+                      () {
+                        if (isTimeEnd) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('زمان در حال اجرا است'),
+                            ),
+                          );
+                        } else {
+                          _minutConfirm = cronometerTask.minut;
+                          _secondsConfirm = cronometerTask.seconds;
+                        }
+                      },
+                    );
+                  },
+                  child: Image.asset('images/play_button_icon.png')),
+              SizedBox(width: 10.0),
+              Text(
+                '${replaceFarsiNumber('${cronometerTask.minut}').padLeft(2, '${replaceFarsiNumber('0')}')}:${replaceFarsiNumber('${cronometerTask.seconds}').padLeft(2, '${replaceFarsiNumber('0')}')}',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              Spacer(),
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: Expanded(
+                  flex: 3,
+                  child: Text(
+                    '${cronometerTask.subTitle}',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.normal,
+                      color: greyColor,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.0),
+              Text(
+                '${cronometerTask.title}',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              SizedBox(width: 15.0),
+              Image.asset('images/${cronometerTask.image}.png'),
+            ],
+          ),
+        ),
       ),
     );
   }
